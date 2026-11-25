@@ -1,0 +1,15 @@
+meta {
+  name: Récupérer un jeu inexistant
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/games/2147483647
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: 404
+}

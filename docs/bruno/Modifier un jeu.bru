@@ -1,0 +1,25 @@
+meta {
+  name: Modifier un jeu
+  type: http
+  seq: 5
+}
+
+put {
+  url: {{baseUrl}}/api/games/{{gameId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Bruno collection test modifié",
+    "editor": "Test Studio",
+    "releaseYear": 2023,
+    "genre": "Action-RPG",
+    "rating": 9
+  }
+}
+
+assert {
+  res.status: 200
+}

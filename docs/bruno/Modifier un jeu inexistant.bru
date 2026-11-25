@@ -1,0 +1,25 @@
+meta {
+  name: Modifier un jeu inexistant
+  type: http
+  seq: 13
+}
+
+put {
+  url: {{baseUrl}}/api/games/2147483647
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Jeu inexistant",
+    "editor": "Test Studio",
+    "releaseYear": 2022,
+    "genre": "RPG",
+    "rating": 8
+  }
+}
+
+assert {
+  res.status: 404
+}

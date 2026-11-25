@@ -1,0 +1,25 @@
+meta {
+  name: Ajouter un jeu avec une note invalide
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{baseUrl}}/api/games
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Note invalide",
+    "editor": "Test Studio",
+    "releaseYear": 2022,
+    "genre": "RPG",
+    "rating": 11
+  }
+}
+
+assert {
+  res.status: 400
+}

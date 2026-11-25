@@ -1,0 +1,15 @@
+meta {
+  name: Supprimer une deuxième fois
+  type: http
+  seq: 7
+}
+
+delete {
+  url: {{baseUrl}}/api/games/{{gameId}}
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: 404
+}

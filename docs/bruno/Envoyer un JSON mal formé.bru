@@ -1,0 +1,23 @@
+meta {
+  name: Envoyer un JSON mal formé
+  type: http
+  seq: 11
+}
+
+post {
+  url: {{baseUrl}}/api/games
+  body: text
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:text {
+  {"title":
+}
+
+assert {
+  res.status: 400
+}

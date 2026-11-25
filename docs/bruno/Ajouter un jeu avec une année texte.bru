@@ -1,0 +1,25 @@
+meta {
+  name: Ajouter un jeu avec une année texte
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{baseUrl}}/api/games
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "title": "Année invalide",
+    "editor": "Test Studio",
+    "releaseYear": "2022",
+    "genre": "RPG",
+    "rating": 8
+  }
+}
+
+assert {
+  res.status: 400
+}
