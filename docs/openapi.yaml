@@ -20,6 +20,8 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Game"
+        "500":
+          description: Erreur interne du serveur
     post:
       summary: Ajouter un jeu
       operationId: createGame
@@ -38,6 +40,8 @@ paths:
                 $ref: "#/components/schemas/Game"
         "400":
           description: Données du jeu invalides
+        "500":
+          description: Erreur interne du serveur
   /api/games/{id}:
     parameters:
       - name: id
@@ -59,6 +63,10 @@ paths:
                 $ref: "#/components/schemas/Game"
         "404":
           description: Jeu introuvable
+        "400":
+          description: Identifiant invalide
+        "500":
+          description: Erreur interne du serveur
     put:
       summary: Modifier un jeu
       operationId: updateGame
@@ -79,6 +87,8 @@ paths:
           description: Données du jeu invalides
         "404":
           description: Jeu introuvable
+        "500":
+          description: Erreur interne du serveur
     delete:
       summary: Supprimer un jeu
       operationId: deleteGame
@@ -87,6 +97,10 @@ paths:
           description: Jeu supprimé
         "404":
           description: Jeu introuvable
+        "400":
+          description: Identifiant invalide
+        "500":
+          description: Erreur interne du serveur
 components:
   schemas:
     Game:
