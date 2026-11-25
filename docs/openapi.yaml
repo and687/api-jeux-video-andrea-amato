@@ -1,28 +1,145 @@
 openapi: 3.0.3
 info:
-  title: API Jeux vidéo
+  title: API Jeux Vidéo
   version: 1.0.0
-  description: API de gestion de jeux vidéo
+  description: API CRUD pour gérer une collection de jeux vidéo.
 servers:
   - url: http://localhost:3000
+    description: Serveur local de développement
 paths:
-  /health:
+  /api/games:
     get:
-      summary: Vérifier l'état de l'API
+      summary: Récupérer tous les jeux
+      operationId: getAllGames
       responses:
         "200":
-          description: L'API fonctionne
+          description: Liste des jeux
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-                    example: ok
-  /api-docs:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Game"
+    post:
+      summary: Ajouter un jeu
+      operationId: createGame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGameInput"
+      responses:
+        "201":
+          description: Jeu créé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "400":
+          description: Données du jeu invalides
+  /api/games/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Identifiant numérique du jeu
+        schema:
+          type: integer
+          minimum: 1
     get:
-      summary: Afficher la documentation Swagger UI
+      summary: Récupérer un jeu
+      operationId: getGameById
       responses:
         "200":
-          description: Interface interactive OpenAPI
+          description: Jeu trouvé
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "404":
+          description: Jeu introuvable
+    put:
+      summary: Modifier un jeu
+      operationId: updateGame
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateGameInput"
+      responses:
+        "200":
+          description: Jeu modifié
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Game"
+        "400":
+          description: Données du jeu invalides
+        "404":
+          description: Jeu introuvable
+    delete:
+      summary: Supprimer un jeu
+      operationId: deleteGame
+      responses:
+        "204":
+          description: Jeu supprimé
+        "404":
+          description: Jeu introuvable
+components:
+  schemas:
+    Game:
+      type: object
+      required:
+        - id
+        - title
+        - editor
+        - releaseYear
+        - genre
+        - rating
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "The Witcher 3: Wild Hunt"
+        editor:
+          type: string
+          example: CD Projekt
+        releaseYear:
+          type: integer
+          example: 2015
+        genre:
+          type: string
+          example: RPG
+        rating:
+          type: number
+          format: float
+          example: 9.5
+    CreateGameInput:
+      type: object
+      required:
+        - title
+        - editor
+        - releaseYear
+        - genre
+        - rating
+      properties:
+        title:
+          type: string
+          example: "The Witcher 3: Wild Hunt"
+        editor:
+          type: string
+          example: CD Projekt
+        releaseYear:
+          type: integer
+          example: 2015
+        genre:
+          type: string
+          example: RPG
+        rating:
+          type: number
+          format: float
+          example: 9.5
