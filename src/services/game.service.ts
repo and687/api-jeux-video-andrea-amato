@@ -100,6 +100,10 @@ export function createGame(value: unknown): Game {
 
 export function updateGame(value: string, gameInput: unknown): Game {
   const id = parseGameId(value);
+  if (!selectGameById(id)) {
+    throw new HttpError(404, "Jeu introuvable.");
+  }
+
   const input = validateGameInput(gameInput);
 
   if (!saveGame(id, input)) {
