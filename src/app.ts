@@ -1,41 +1,65 @@
 import express from "express";
+import type { NextFunction, Request, Response } from "express";
 import swaggerUi from "swagger-ui-express";
-import { readFileSync } from "node:fs";
+import fs from "node:fs";
+import path from "node:path";
 import YAML from "yaml";
 import "./database/database.js";
-import { openApiPath } from "./config/paths.js";
-import gameRouter from "./routes/game.routes.js";
+import { projectRoot } from "./config/paths.js";
+import { gameRoutes } from "./routes/game.routes.js";
+import { HttpError } from "./services/game.service.js";
 
 export const app = express();
-const openApiDocument = YAML.parse(readFileSync(openApiPath, "utf8"));
+const swaggerPath = path.join(projectRoot, "docs/openapi.yaml");
+const swaggerText = fs.readFileSync(swaggerPath, "utf8");
+const document = YAML.parse(swaggerText);
 
 app.use(express.json());
-app.use("/api/games", gameRouter);
-app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(openApiDocument));
 app.get("/", (_request, response) => {
-  response.send("API Jeux Vidéo opérationnelle.");
+  response.json({ message: "API Jeux Vidéo opérationnelle" });
+});
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(document));
+app.use("/api/games", gameRoutes);
+
+app.use((_request, response) => {
+  response.status(404).json({ error: "Route introuvable" });
 });
 
-app.use(
-  (
-    error: unknown,
-    _request: express.Request,
-    response: express.Response,
-    _next: express.NextFunction,
-  ) => {
-    console.error("Erreur lors du traitement de la requête :", error);
-    const status =
-      typeof error === "object" &&
-      error !== null &&
-      "status" in error &&
-      error.status === 400
-        ? 400
-        : 500;
-    response.status(status).json({
-      error:
-        status === 400
-          ? "Corps JSON invalide."
-          : "Erreur interne du serveur.",
+interface RequestError extends Error {
+  type?: string;
+  status?: number;
+}
+
+function handleError(
+  error: RequestError,
+  _request: Request,
+  response: Response,
+  _next: NextFunction,
+): void {
+  if (error instanceof HttpError) {
+    response.status(error.status).json({
+      error: error.message,
+      ...(error.details === undefined ? {} : { details: error.details }),
     });
-  },
-);
+    return;
+  }
+
+  if (error.type === "entity.parse.failed") {
+    response.status(400).json({ error: "JSON invalide" });
+    return;
+  }
+
+  if (error.status && error.status >= 400 && error.status < 500) {
+    const message =
+      error.status === 413
+        ? "Corps de requête trop volumineux"
+        : "Requête invalide";
+    response.status(error.status).json({ error: message });
+    return;
+  }
+
+  console.error(error);
+  response.status(500).json({ error: "Erreur interne du serveur" });
+}
+
+app.use(handleError);

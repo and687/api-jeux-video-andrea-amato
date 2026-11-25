@@ -7,12 +7,10 @@ import {
   removeGame,
 } from "../controllers/game.controller.js";
 
-const gameRouter = Router();
+export const gameRoutes = Router();
 
-gameRouter.get("/", listGames);
-gameRouter.get("/:id", readGame);
-gameRouter.post("/", addGame);
-gameRouter.put("/:id", editGame);
-gameRouter.delete("/:id", removeGame);
-
-export default gameRouter;
+gameRoutes.get("/", listGames);
+gameRoutes.get("/:id", readGame);
+gameRoutes.post("/", addGame);
+gameRoutes.put("/:id", editGame);
+gameRoutes.delete("/:id", removeGame);

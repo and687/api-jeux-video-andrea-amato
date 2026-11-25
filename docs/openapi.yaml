@@ -7,6 +7,22 @@ servers:
   - url: http://localhost:3000
     description: Serveur local de développement
 paths:
+  /:
+    get:
+      summary: Vérifier que l'API fonctionne
+      responses:
+        "200":
+          description: L'API est opérationnelle
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - message
+                properties:
+                  message:
+                    type: string
+                    example: API Jeux Vidéo opérationnelle
   /api/games:
     get:
       summary: Récupérer tous les jeux
