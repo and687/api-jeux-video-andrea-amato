@@ -1,0 +1,28 @@
+openapi: 3.0.3
+info:
+  title: API Jeux vidéo
+  version: 1.0.0
+  description: API de gestion de jeux vidéo
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Vérifier l'état de l'API
+      responses:
+        "200":
+          description: L'API fonctionne
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /api-docs:
+    get:
+      summary: Afficher la documentation Swagger UI
+      responses:
+        "200":
+          description: Interface interactive OpenAPI
