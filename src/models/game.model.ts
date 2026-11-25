@@ -1,3 +1,11 @@
+export interface CreateGameInput {
+  title: string;
+  editor: string;
+  releaseYear: number;
+  genre: string;
+  rating: number;
+}
+
 export class Game {
   constructor(
     public id: number,
