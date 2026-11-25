@@ -35,27 +35,49 @@ function validateGameInput(value: unknown): CreateGameInput {
   if (typeof input.title !== "string") {
     throw new HttpError(400, "title doit être une chaîne.");
   }
+  const title = input.title.trim();
+  if (title.length === 0) {
+    throw new HttpError(400, "title ne peut pas être vide.");
+  }
   if (typeof input.editor !== "string") {
     throw new HttpError(400, "editor doit être une chaîne.");
   }
+  const editor = input.editor.trim();
+  if (editor.length === 0) {
+    throw new HttpError(400, "editor ne peut pas être vide.");
+  }
   if (
     typeof input.releaseYear !== "number" ||
-    !Number.isInteger(input.releaseYear)
+    !Number.isInteger(input.releaseYear) ||
+    input.releaseYear < 1950 ||
+    input.releaseYear > 2100
   ) {
-    throw new HttpError(400, "releaseYear doit être un nombre entier.");
+    throw new HttpError(
+      400,
+      "releaseYear doit être un entier compris entre 1950 et 2100.",
+    );
   }
   if (typeof input.genre !== "string") {
     throw new HttpError(400, "genre doit être une chaîne.");
   }
-  if (typeof input.rating !== "number" || !Number.isFinite(input.rating)) {
-    throw new HttpError(400, "rating doit être un nombre.");
+  const genre = input.genre.trim();
+  if (genre.length === 0) {
+    throw new HttpError(400, "genre ne peut pas être vide.");
+  }
+  if (
+    typeof input.rating !== "number" ||
+    !Number.isFinite(input.rating) ||
+    input.rating < 0 ||
+    input.rating > 10
+  ) {
+    throw new HttpError(400, "rating doit être un nombre compris entre 0 et 10.");
   }
 
   return {
-    title: input.title,
-    editor: input.editor,
+    title,
+    editor,
     releaseYear: input.releaseYear,
-    genre: input.genre,
+    genre,
     rating: input.rating,
   };
 }
