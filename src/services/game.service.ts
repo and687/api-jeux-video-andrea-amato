@@ -11,7 +11,7 @@ export class HttpError extends Error {
   constructor(
     public readonly status: number,
     message: string,
-    public readonly details?: unknown,
+    public readonly details?: string[],
   ) {
     super(message);
     this.name = "HttpError";
@@ -21,64 +21,69 @@ export class HttpError extends Error {
 function parseGameId(value: string): number {
   const id = Number(value);
   if (!Number.isInteger(id) || id <= 0) {
-    throw new HttpError(400, "Identifiant invalide.");
+    throw new HttpError(400, "Identifiant invalide", [
+      "L'identifiant doit être un entier strictement positif.",
+    ]);
   }
   return id;
 }
 
 function validateGameInput(value: unknown): CreateGameInput {
   if (typeof value !== "object" || value === null) {
-    throw new HttpError(400, "Données du jeu invalides.");
+    throw new HttpError(400, "Données invalides", [
+      "Le corps de la requête doit être un objet JSON.",
+    ]);
   }
 
   const input = value as Record<string, unknown>;
+  const details: string[] = [];
+
+  const title = typeof input.title === "string" ? input.title.trim() : "";
   if (typeof input.title !== "string") {
-    throw new HttpError(400, "title doit être une chaîne.");
+    details.push("Le titre est obligatoire et doit être un texte.");
+  } else if (title.length === 0) {
+    details.push("Le titre est obligatoire");
   }
-  const title = input.title.trim();
-  if (title.length === 0) {
-    throw new HttpError(400, "title ne peut pas être vide.");
-  }
+  const editor = typeof input.editor === "string" ? input.editor.trim() : "";
   if (typeof input.editor !== "string") {
-    throw new HttpError(400, "editor doit être une chaîne.");
+    details.push("L'éditeur est obligatoire et doit être un texte.");
+  } else if (editor.length === 0) {
+    details.push("L'éditeur est obligatoire");
   }
-  const editor = input.editor.trim();
-  if (editor.length === 0) {
-    throw new HttpError(400, "editor ne peut pas être vide.");
-  }
+  const releaseYear =
+    typeof input.releaseYear === "number" ? input.releaseYear : Number.NaN;
   if (
-    typeof input.releaseYear !== "number" ||
-    !Number.isInteger(input.releaseYear) ||
-    input.releaseYear < 1950 ||
-    input.releaseYear > 2100
+    !Number.isInteger(releaseYear) ||
+    releaseYear < 1950 ||
+    releaseYear > 2100
   ) {
-    throw new HttpError(
-      400,
-      "releaseYear doit être un entier compris entre 1950 et 2100.",
-    );
+    details.push("L'année de sortie doit être un entier compris entre 1950 et 2100.");
   }
+  const genre = typeof input.genre === "string" ? input.genre.trim() : "";
   if (typeof input.genre !== "string") {
-    throw new HttpError(400, "genre doit être une chaîne.");
+    details.push("Le genre est obligatoire et doit être un texte.");
+  } else if (genre.length === 0) {
+    details.push("Le genre est obligatoire");
   }
-  const genre = input.genre.trim();
-  if (genre.length === 0) {
-    throw new HttpError(400, "genre ne peut pas être vide.");
-  }
+  const rating = typeof input.rating === "number" ? input.rating : Number.NaN;
   if (
-    typeof input.rating !== "number" ||
-    !Number.isFinite(input.rating) ||
-    input.rating < 0 ||
-    input.rating > 10
+    !Number.isFinite(rating) ||
+    rating < 0 ||
+    rating > 10
   ) {
-    throw new HttpError(400, "rating doit être un nombre compris entre 0 et 10.");
+    details.push("La note doit être comprise entre 0 et 10");
+  }
+
+  if (details.length > 0) {
+    throw new HttpError(400, "Données invalides", details);
   }
 
   return {
     title,
     editor,
-    releaseYear: input.releaseYear,
+    releaseYear,
     genre,
-    rating: input.rating,
+    rating,
   };
 }
 
